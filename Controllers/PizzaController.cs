@@ -22,23 +22,31 @@ namespace pizzeria_web_api.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Get(string? nome) {
-            _logger.WriteLog($"[GET] /Pizza - Nome: {nome ?? "null"}");
+            //_logger.WriteLog($"[GET] /Pizza - Nome: {nome ?? "null"}");
+            _logger.WriteStartingLogWithHttpInfo(HttpContext, $"Nome parametro: {nome ?? "null"}");
+
             try
             {
                 if (nome == null)
                 {
                     List<Pizza> result = (await PizzaRepository.GetAllPizza());
-                    _logger.WriteLog($"[GET] /Pizza - 200 OK - Restituiti {result.Count} risultati");
+                    //_logger.WriteLog($"[GET] /Pizza - 200 OK - Restituiti {result.Count} risultati");
+                    _logger.WriteResultLogWithHttpInfo(HttpContext, $"Restituiti {result.Count} risultati");
                     return Ok(result);
+                    
                     
                 }
                 else
                 {
-                    return Ok(await PizzaRepository.GetPizzaByName(nome));
+                    List<Pizza> result = (await PizzaRepository.GetAllPizza());
+                    _logger.WriteResultLogWithHttpInfo(HttpContext, $"Restituiti {result.Count} risultati per nome '{nome}'");
+                    return Ok(result);
                 }
             }
             catch (Exception ex)
             {
+                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                _logger.WriteResultLogWithHttpInfo(HttpContext, $"Errore: {ex.Message}");
                 return BadRequest(ex.Message);
             }
 
