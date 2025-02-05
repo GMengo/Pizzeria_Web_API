@@ -1,3 +1,0 @@
-﻿Pizzeria web API
-Backend con ASP.Net core
-Work in progress...
