@@ -1,0 +1,6 @@
+@la_mia_pizzeria_web_api_crud_single_HostAddress = http://localhost:5067
+
+GET {{pizzeria_web_api_HostAddress}}/Pizza
+Accept: application/json
+
+###
