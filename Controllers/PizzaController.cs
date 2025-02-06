@@ -3,6 +3,8 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http.HttpResults;
+using pizzeria_web_api.Models;
+using pizzeria_web_api.Repositories;
 
 namespace pizzeria_web_api.Controllers
 {

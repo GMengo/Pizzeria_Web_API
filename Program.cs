@@ -1,4 +1,6 @@
 
+using pizzeria_web_api.Repositories;
+
 namespace pizzeria_web_api
 {
     public class Program

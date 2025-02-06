@@ -33,3 +33,10 @@
     ('Bufalina', 'pomodoro, mozzarella di bufala e basilico', 11.0),
     ('Frutti di Mare', 'pomodoro, frutti di mare misti e prezzemolo', 12.5),
     ('Ortolana', 'mozzarella, zucchine, melanzane e peperoni grigliati', 9.5);
+
+CREATE TABLE User 
+(
+    Id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+
+
+)
