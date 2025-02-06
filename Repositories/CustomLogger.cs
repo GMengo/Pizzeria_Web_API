@@ -1,14 +1,17 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace pizzeria_web_api.Repositories
 {
 
-    public interface ICustomLogger
+    public interface ICustomLogger 
     {
+
         public void WriteLog(string message);
         public void WriteStartingLogWithHttpInfo(HttpContext httpContext, string? message = null);
-        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null);
+        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK);
+
 
     }
 
@@ -23,18 +26,17 @@ namespace pizzeria_web_api.Repositories
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} [{method} {path}] - {message}");
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} [method: {method}, path: {path}] - {message}");
         }
-
-        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null)
+        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             string method = httpContext.Request.Method;
-            int statusCode = httpContext.Response.StatusCode;
             string path = httpContext.Request.Path;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} [{method} {statusCode} {path}] - {message}");
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} [method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}");
         }
 
     }
+
 
     public class CustomFileLogger : ICustomLogger
     {
@@ -46,14 +48,13 @@ namespace pizzeria_web_api.Repositories
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} [{method} {path}] - {message}\n");
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} [method: {method}, path: {path}] - {message}\n");
         }
-        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null)
+        public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             string method = httpContext.Request.Method;
-            int statusCode = httpContext.Response.StatusCode;
             string path = httpContext.Request.Path;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} [{method} {statusCode} {path}] - {message}\n");
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} [method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}\n");
         }
     }
 }

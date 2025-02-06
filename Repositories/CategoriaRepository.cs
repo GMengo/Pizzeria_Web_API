@@ -7,7 +7,7 @@ namespace pizzeria_web_api.Repositories
 {
     public class CategoriaRepository
     {
-        private const string connectionString = "Data Source=localhost;Initial Catalog=PizzeriaDB;Integrated Security=True;Trust Server Certificate=True";
+        private const string connectionString = "Data Source=localhost;Initial Catalog=PizzeriaDB;Integrated Security=True;TrustServerCertificate=True";
         public CategoriaRepository() { }
 
         public Categoria ReadCategoria(SqlDataReader reader)

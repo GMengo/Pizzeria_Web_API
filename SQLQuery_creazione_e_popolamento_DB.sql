@@ -1,9 +1,30 @@
-﻿        CREATE TABLE Categoria
+﻿        CREATE TABLE Pizza
     (
         [Id] INT NOT NULL identity(1,1) PRIMARY KEY,
-        [nome] VARCHAR(100) NOT NULL,
+        [nome] VARCHAR(50) NOT NULL,
+        [descrizione] VARCHAR(255) NOT NULL,
+        [prezzo] FLOAT NOT NULL
+    )
+        CREATE TABLE Categoria
+    (
+        [Id] INT NOT NULL identity(1,1) PRIMARY KEY,
+        [nome] VARCHAR(100) NOT NULL
     )
 
+        CREATE TABLE Ingredienti
+    (
+        [Id] INT IDENTITY(1,1) PRIMARY KEY,
+        [nome] VARCHAR(50) not null
+    )
+
+        CREATE TABLE PizzaIngredienti
+    (
+        PizzaId INT,
+        IngredientiId INT,
+        PRIMARY KEY (Pizzad, IngredientiId),
+        FOREIGN KEY (PizzaId) REFERENCES Pizza(Id),
+        FOREIGN KEY (IngredientiId) REFERENCES Ingredienti(Id)
+    )
 
     alter table pizza
     add categoriaId int null
@@ -11,16 +32,10 @@
     alter table pizza
     add constraint fk_Pizza_Categoria foreign key(categoriaId) references Categoria(Id);
 
+
     insert into Categoria(nome) values('bianca'),('rossa'),('margherita');
 
 
-        CREATE TABLE Pizza
-    (
-        [Id] INT NOT NULL identity(1,1) PRIMARY KEY,
-        [nome] VARCHAR(50) NOT NULL,
-        [descrizione] VARCHAR(255) NOT NULL,
-        [prezzo] FLOAT NOT NULL
-    )
 
     INSERT INTO Pizza(nome, descrizione, prezzo) VALUES
     ('Diavola', 'base margherita con salame piccante', 9.5),
@@ -34,9 +49,3 @@
     ('Frutti di Mare', 'pomodoro, frutti di mare misti e prezzemolo', 12.5),
     ('Ortolana', 'mozzarella, zucchine, melanzane e peperoni grigliati', 9.5);
 
-CREATE TABLE User 
-(
-    Id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
-
-
-)

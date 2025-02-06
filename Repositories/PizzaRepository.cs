@@ -7,7 +7,7 @@ namespace pizzeria_web_api.Repositories
     public class PizzaRepository
     {
 
-        private const string connectionString = "Data Source=localhost;Initial Catalog=PizzeriaDB;Integrated Security=True;Trust Server Certificate=True";
+        private const string connectionString = "Data Source=localhost;Initial Catalog=PizzeriaDB;Integrated Security=True;TrustServerCertificate=True";
 
         public Pizza ReadPizza(SqlDataReader r)
         {
@@ -102,25 +102,7 @@ namespace pizzeria_web_api.Repositories
             return null;
         }
 
-        public async Task<int> CreatePizzaParams(string nome, string descrizione, decimal prezzo)
-        {
-            string query = "INSERT INTO Pizza(nome, descrizione, prezzo) VALUES (@nome, @descrizione, @prezzo)";
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                await conn.OpenAsync();
-                using (SqlCommand command = new SqlCommand(query, conn))
-                {
-                    command.Parameters.AddWithValue("@nome", nome);
-                    command.Parameters.AddWithValue("@descrizione", descrizione);
-                    command.Parameters.AddWithValue("@prezzo", prezzo);
-
-                    return await command.ExecuteNonQueryAsync();
-                }
-            }
-        }
-
-        public async Task<(int, Pizza)> CreatePizzaBody(Pizza p)
+        public async Task<(int, Pizza)> CreatePizza(Pizza p)
         {
             string query = "INSERT INTO Pizza(nome, descrizione, prezzo) VALUES (@nome, @descrizione, @prezzo)";
 
