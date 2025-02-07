@@ -11,26 +11,27 @@
         [nome] VARCHAR(100) NOT NULL
     )
 
-        CREATE TABLE Ingredienti
-    (
-        [Id] INT IDENTITY(1,1) PRIMARY KEY,
-        [nome] VARCHAR(50) not null
-    )
-
-        CREATE TABLE PizzaIngredienti
-    (
-        PizzaId INT,
-        IngredientiId INT,
-        PRIMARY KEY (Pizzad, IngredientiId),
-        FOREIGN KEY (PizzaId) REFERENCES Pizza(Id),
-        FOREIGN KEY (IngredientiId) REFERENCES Ingredienti(Id)
-    )
-
     alter table pizza
     add categoriaId int null
 
     alter table pizza
     add constraint fk_Pizza_Categoria foreign key(categoriaId) references Categoria(Id);
+
+        CREATE TABLE Ingrediente
+    (
+        [Id] INT IDENTITY(1,1) PRIMARY KEY,
+        [nome] VARCHAR(50) not null
+    )
+
+        CREATE TABLE PizzaIngrediente
+    (
+        pizzaId INT,
+        ingredienteId INT,
+        PRIMARY KEY (PizzaId, IngredienteId),
+        FOREIGN KEY (PizzaId) REFERENCES Pizza(Id),
+        FOREIGN KEY (IngredienteId) REFERENCES Ingrediente(Id)
+    )
+
 
 
     insert into Categoria(nome) values('bianca'),('rossa'),('margherita');

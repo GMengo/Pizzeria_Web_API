@@ -1,13 +1,13 @@
 ﻿namespace pizzeria_web_api.Models
 {
-    public class Ingredienti
+    public class Ingrediente
     {
         public int Id { get; set; }
         public string Nome { get; set; }
 
-        public Ingredienti() { }
+        public Ingrediente() { }
 
-        public Ingredienti(int id, string nome)
+        public Ingrediente(int id, string nome)
         {
             this.Id = id;
             this.Nome = nome;

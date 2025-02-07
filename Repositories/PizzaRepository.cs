@@ -1,4 +1,5 @@
-﻿using System.Runtime.ConstrainedExecution;
+﻿using System.Reflection.PortableExecutable;
+using System.Runtime.ConstrainedExecution;
 using Microsoft.Data.SqlClient;
 using pizzeria_web_api.Models;
 
@@ -9,31 +10,49 @@ namespace pizzeria_web_api.Repositories
 
         private const string connectionString = "Data Source=localhost;Initial Catalog=PizzeriaDB;Integrated Security=True;TrustServerCertificate=True";
 
-        public Pizza ReadPizza(SqlDataReader r)
+        public void ReadPizza(SqlDataReader r, Dictionary<int,Pizza> pizze)
         {
-            Pizza pizza = new Pizza();
-            pizza.Id = r.GetInt32(r.GetOrdinal("Id"));
-            pizza.Nome = r.GetString(r.GetOrdinal("nome"));
-            pizza.Descrizione = r.GetString(r.GetOrdinal("descrizione"));
-            pizza.Prezzo = (decimal)r.GetDouble(r.GetOrdinal("prezzo"));
+            int id = r.GetInt32(r.GetOrdinal("Id"));
 
-            if (!r.IsDBNull(r.GetOrdinal("categoriaId")))
+            if (pizze.TryGetValue(id, out Pizza pizza) == false)
             {
+                string nome = r.GetString(r.GetOrdinal("nome"));
+                string descrizione = r.GetString(r.GetOrdinal("descrizione"));
+                decimal prezzo = (decimal)r.GetDouble(r.GetOrdinal("prezzo"));
+                pizza = new Pizza(id, nome, descrizione, prezzo);
+                pizze.Add(id, pizza);
+
+            }
+            if (r.IsDBNull(r.GetOrdinal("Id_Categoria")) == false)
+            {
+                int categoriaId = r.GetInt32(r.GetOrdinal("Id_Categoria"));
+                string nomeCategoria = r.GetString(r.GetOrdinal("nome_Categoria"));
                 Categoria c = new();
-                c.Id = r.GetInt32(r.GetOrdinal("Id"));
-                c.Nome = r.GetString(r.GetOrdinal("nome"));
+                c.Id = r.GetInt32(r.GetOrdinal("Id_Categoria"));
+                c.Nome = r.GetString(r.GetOrdinal("nome_Categoria"));
                 pizza.CategoriaId = c.Id;
                 pizza.Categoria = c;
             }
 
-            return pizza;
+            if (r.IsDBNull(r.GetOrdinal("Id_Ingrediente")) == false)
+            {
+                var ingredienteId = r.GetInt32(r.GetOrdinal("Id_Ingrediente"));
+                var ingredienteNome = r.GetString(r.GetOrdinal("nome_Ingrediente"));
+                Ingrediente i = new Ingrediente(ingredienteId, ingredienteNome);
+                pizza.Ingrediente.Add(i);
+            }
         }
 
         public async Task<List<Pizza>> GetAllPizza()
         {
-            List<Pizza> ListaPizze = new List<Pizza>();
+            Dictionary<int, Pizza> Pizze = new Dictionary<int, Pizza>();
 
-            string query = "SELECT p.*, C.Id, C.nome FROM pizza p LEFT JOIN Categoria C on p.CategoriaId = C.Id";
+            string query = @"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, I.Id as Id_Ingrediente, I.nome as nome_Ingrediente
+                             FROM pizza p
+                             LEFT JOIN Categoria C on p.CategoriaId = C.Id
+                             LEFT JOIN PizzaIngrediente PI on PI.pizzaId = P.Id
+                             LEFT JOIN Ingrediente I on PI.ingredienteId = I.Id
+                            ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
@@ -43,19 +62,24 @@ namespace pizzeria_web_api.Repositories
                     {
                         while (await reader.ReadAsync())
                         {
-                            Pizza p = ReadPizza(reader);
-                            ListaPizze.Add(p);
+                            ReadPizza(reader, Pizze);
                         }
                     }
                 }
-                return ListaPizze;
+                return Pizze.Values.ToList();
             }
         }
         public async Task<List<Pizza>> GetPizzaByName(string nome)
         {
-            List<Pizza> ListaPizze = new List<Pizza>();
+            Dictionary<int, Pizza> Pizze = new Dictionary<int, Pizza>();
 
-            string query = "SELECT * FROM pizza WHERE nome like @nome";
+            string query = @"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, I.Id as Id_Ingrediente, I.nome as nome_Ingrediente
+                             FROM pizza p
+                             LEFT JOIN Categoria C on p.CategoriaId = C.Id
+                             LEFT JOIN PizzaIngrediente PI on PI.pizzaId = P.Id
+                             LEFT JOIN Ingrediente I on PI.ingredienteId = I.Id
+                             WHERE p.nome like @nome
+                            ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
@@ -67,19 +91,26 @@ namespace pizzeria_web_api.Repositories
                     {
                         while (await reader.ReadAsync())
                         {
-                            Pizza p = ReadPizza(reader);
-                            ListaPizze.Add(p);
-                            //ListaPizze.Add(ReadPizza(reader));  scritto in una sola riga 
+                            ReadPizza(reader, Pizze);
+
                         }
                     }
                 }
-                return ListaPizze;
+                return Pizze.Values.ToList();
             }
         }
 
         public async Task<Pizza> GetPizzaByIdAsync(int id)
         {
-            string query = "SELECT * FROM pizza where id = @id";
+            Dictionary<int, Pizza> Pizze = new Dictionary<int, Pizza>();
+
+            string query = @"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, I.Id as Id_Ingrediente, I.nome as nome_Ingrediente
+                             FROM pizza p
+                             LEFT JOIN Categoria C on p.CategoriaId = C.Id
+                             LEFT JOIN PizzaIngrediente PI on PI.pizzaId = P.Id
+                             LEFT JOIN Ingrediente I on PI.ingredienteId = I.Id
+                             WHERE p.id = @id
+                            ";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -91,15 +122,15 @@ namespace pizzeria_web_api.Repositories
                     {
                         while (await reader.ReadAsync())
                         {
-                            Pizza p = ReadPizza(reader);
-                            return p;
+                            ReadPizza(reader,Pizze);
+                            
                         }
 
                     }
                 }
 
             }
-            return null;
+            return Pizze.Values.FirstOrDefault();
         }
 
         public async Task<(int, Pizza)> CreatePizza(Pizza p)
