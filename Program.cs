@@ -1,4 +1,5 @@
 
+using CalculatorWebApi.Middlewares;
 using pizzeria_web_api.Repositories;
 
 namespace pizzeria_web_api
@@ -27,6 +28,8 @@ namespace pizzeria_web_api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<LogMiddleware>();
 
             app.UseHttpsRedirection();
 

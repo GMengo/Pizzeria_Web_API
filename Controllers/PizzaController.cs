@@ -15,6 +15,8 @@ namespace pizzeria_web_api.Controllers
     {
 
         private PizzaRepository PizzaRepository { get; set; }
+
+        //è stata lasciata la prima versione del logger, ora è implementato come middleware quindi i log di queste chiamate saranno doppi 
         private ICustomLogger _logger;
 
         public PizzaController(ICustomLogger logger, PizzaRepository pizzaRepository)
