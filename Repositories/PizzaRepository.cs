@@ -125,10 +125,8 @@ namespace pizzeria_web_api.Repositories
                             ReadPizza(reader,Pizze);
                             
                         }
-
                     }
                 }
-
             }
             return Pizze.Values.FirstOrDefault();
         }
@@ -152,7 +150,6 @@ namespace pizzeria_web_api.Repositories
 
                     await GestisciIngredienti(p.IngredienteId,pizzaId,conn);
 
-
                     return (await command.ExecuteNonQueryAsync(), p); // ritorna una tupla, contenente il numero di righe "modificate" e l' oggetto creato
                 }
             }
@@ -164,7 +161,7 @@ namespace pizzeria_web_api.Repositories
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
-                using (var command = new SqlCommand(query, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
                     command.Parameters.AddWithValue("@nome", p.Nome);
@@ -172,9 +169,9 @@ namespace pizzeria_web_api.Repositories
                     command.Parameters.AddWithValue("@prezzo", p.Prezzo);
                     command.Parameters.AddWithValue("@categoriaId", p.CategoriaId ?? (object)DBNull.Value);
 
-                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
 
-                    await GestisciIngredienti(p.IngredienteId, pizzaId, conn);
+                    await GestisciIngredienti(p.IngredienteId, id, connection);
 
                     return rowsAffected;
                 }
@@ -196,5 +193,60 @@ namespace pizzeria_web_api.Repositories
             }
         }
 
+        public async Task<int> OnCategoriaDelete(int categoriaId)
+        {
+            using SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            string query = "UPDATE Pizza SET categoriaId = NULL WHERE categoriaId = @id";
+            using SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("categoriaId", categoriaId);
+            return await command.ExecuteNonQueryAsync();
+        
+        }
+
+        public async Task<int> ClearPizzaIngrediente(int pizzaId)
+        {
+            using SqlConnection conn = new SqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            string query = $"DELETE FROM PizzaIngrediente WHERE pizzaId = @id";
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.Add(new SqlParameter("@id", pizzaId));
+                return await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        private async Task<int> AddPizzaIngrediente(int PizzaId, List<int> Ingredienti)
+        {
+            using SqlConnection conn = new SqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            int inserted = 0;
+            foreach (int IngredienteId in Ingredienti)
+            {
+                string query = $"INSERT INTO PizzaIngrediente (pizzaId, ingredientId) VALUES (@pizzaId, @ingredienteId)";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@PizzaId", PizzaId);
+                    cmd.Parameters.AddWithValue("@IngredienteId", IngredienteId);
+                    inserted += await cmd.ExecuteNonQueryAsync();
+                }
+            }
+            return inserted;
+        }
+
+        private async Task GestisciIngredienti(List<int> Ingredients, int PizzaId, SqlConnection conn)
+        {
+            if (Ingredients == null)
+                return;
+
+            // Rimuoviamo gli Ingredient relativi a questo Pizza
+            await ClearPizzaIngrediente(PizzaId);
+
+            // Inseriamo i nuovi Ingredient
+            await AddPizzaIngrediente(PizzaId, Ingredients);
+        }
     }
 }
