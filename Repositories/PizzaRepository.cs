@@ -43,11 +43,11 @@ namespace pizzeria_web_api.Repositories
             }
         }
 
-        public async Task<List<Pizza>> GetAllPizza()
+        public async Task<List<Pizza>> GetAllPizza(int ? limit = null)
         {
             Dictionary<int, Pizza> Pizze = new Dictionary<int, Pizza>();
 
-            string query = @"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, I.Id as Id_Ingrediente, I.nome as nome_Ingrediente
+            string query = @$"SELECT {(limit == null ? "" : $"TOP {limit}")} p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, I.Id as Id_Ingrediente, I.nome as nome_Ingrediente
                              FROM pizza p
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PizzaIngrediente PI on PI.pizzaId = P.Id
@@ -135,7 +135,8 @@ namespace pizzeria_web_api.Repositories
 
         public async Task<(int, Pizza)> CreatePizza(Pizza p)
         {
-            string query = "INSERT INTO Pizza(nome, descrizione, prezzo) VALUES (@nome, @descrizione, @prezzo)";
+            string query = $"INSERT INTO Pizza (nome, descrizione, prezzo, categoriaId) VALUES (@nome, @descrizione, @prezzo, @categoriaId)" +
+                        $"SELECT SCOPE_IDENTITY();"; // SCOPE_IDENTITY: ci serve per ottenere l'ID appena inserito
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -145,6 +146,11 @@ namespace pizzeria_web_api.Repositories
                     command.Parameters.AddWithValue("@nome", p.Nome);
                     command.Parameters.AddWithValue("@descrizione", p.Descrizione);
                     command.Parameters.AddWithValue("@prezzo", p.Prezzo);
+                    command.Parameters.AddWithValue("@categoriaId", p.CategoriaId ?? (object)DBNull.Value);
+
+                    int pizzaId = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                    await GestisciIngredienti(p.IngredienteId,pizzaId,conn);
 
 
                     return (await command.ExecuteNonQueryAsync(), p); // ritorna una tupla, contenente il numero di righe "modificate" e l' oggetto creato
@@ -154,7 +160,7 @@ namespace pizzeria_web_api.Repositories
 
         public async Task<int> UpdatePizza(int id, Pizza p)
         {
-            string query = "UPDATE Pizza SET nome = @nome, descrizione = @descrizione, prezzo = @prezzo WHERE Id = @Id";
+            string query = "UPDATE Pizza SET nome = @nome, descrizione = @descrizione, prezzo = @prezzo, categpriaId = @categoriaId WHERE Id = @Id";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
@@ -164,7 +170,13 @@ namespace pizzeria_web_api.Repositories
                     command.Parameters.AddWithValue("@nome", p.Nome);
                     command.Parameters.AddWithValue("@descrizione", p.Descrizione);
                     command.Parameters.AddWithValue("@prezzo", p.Prezzo);
-                    return await command.ExecuteNonQueryAsync();
+                    command.Parameters.AddWithValue("@categoriaId", p.CategoriaId ?? (object)DBNull.Value);
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                    await GestisciIngredienti(p.IngredienteId, pizzaId, conn);
+
+                    return rowsAffected;
                 }
             }
 
