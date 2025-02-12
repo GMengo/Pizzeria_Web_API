@@ -85,7 +85,7 @@ namespace pizzeria_web_api.Repositories
             using SqlConnection connection = new SqlConnection( connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand( query, connection);
-            cmd.Parameters.AddWithValue("@name", categoria.Nome);
+            cmd.Parameters.AddWithValue("@nome", categoria.Nome);
 
             return await cmd.ExecuteNonQueryAsync();
         }
@@ -97,7 +97,7 @@ namespace pizzeria_web_api.Repositories
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("@name", categoria.Nome);
+            cmd.Parameters.AddWithValue("@nome", categoria.Nome);
 
             return await cmd.ExecuteNonQueryAsync();
         }

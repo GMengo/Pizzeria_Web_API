@@ -16,6 +16,7 @@ namespace pizzeria_web_api
             builder.Services.AddSingleton<ICustomLogger, CustomConsoleLogger>();
             builder.Services.AddSingleton<PizzaRepository>();
             builder.Services.AddSingleton<CategoriaRepository>();
+            builder.Services.AddSingleton<IngredienteRepository>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
