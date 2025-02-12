@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using pizzeria_web_api.Repositories;
 
-// LogMiddleware.cs
-// SFIDA 5: Completa il middleware
 namespace CalculatorWebApi.Middlewares
 {
     public class LogMiddleware
