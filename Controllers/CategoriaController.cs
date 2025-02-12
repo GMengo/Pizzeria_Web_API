@@ -70,5 +70,45 @@ namespace pizzeria_web_api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Categoria categoria)
+        {
+            try
+            {
+                if (ModelState.IsValid == false)
+                {
+                    return BadRequest(ModelState.Values);
+                }
+                int affectedRows = await _categoriaRepository.UpdateCategoria(id, categoria);
+                if (affectedRows == 0)
+                {
+                    return NotFound();
+                }
+                return Ok(affectedRows);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                int affectedRows = await _categoriaRepository.DeleteCategoria(id);
+                if (affectedRows == 0)
+                {
+                    return NotFound();
+                }
+                return Ok(affectedRows);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
