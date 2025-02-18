@@ -52,7 +52,7 @@ namespace pizzeria_web_api.Repositories
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("nome", $"%{nome}%");
+            command.Parameters.AddWithValue("@nome", $"%{nome}%");
             using (SqlDataReader reader = await command.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
@@ -69,7 +69,7 @@ namespace pizzeria_web_api.Repositories
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("@id", id);
             using SqlDataReader reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
@@ -96,7 +96,7 @@ namespace pizzeria_web_api.Repositories
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@nome", categoria.Nome);
 
             return await cmd.ExecuteNonQueryAsync();
@@ -109,7 +109,7 @@ namespace pizzeria_web_api.Repositories
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("@id", id);
 
             return await cmd.ExecuteNonQueryAsync();
         }

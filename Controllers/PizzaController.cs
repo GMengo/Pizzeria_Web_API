@@ -100,9 +100,25 @@ namespace pizzeria_web_api.Controllers
                     _logger.WriteResultLogWithHttpInfo(HttpContext, $"Dati non validi: {ModelState.Values}", (HttpStatusCode)400);
                     return BadRequest($"Dati non validi: {ModelState.Values}");
                 }
+                p.Id = 0; //mi assicura che la nuova pizza venga inserita, il json in entrata necessita un id, poi nel db sarà l' autoincrementale giusto questo è solo per farlo arrivare al db
                 (int affectedRows, Pizza createdPizza) createdTupla = await PizzaRepository.CreatePizza(p);
                 _logger.WriteResultLogWithHttpInfo(HttpContext, $"è stata aggiunta: {createdTupla.affectedRows} Pizza al DB", (HttpStatusCode)201);
-                return Created($"è stata aggiunta: {createdTupla.affectedRows} Pizza al DB", createdTupla.createdPizza);
+                // quando si utilizza created() andrebbero inseriti due parametri --> Created(uri, object value),
+                // il primo è l' uri, che aggiunge un header Location con il valore uri
+                // il secondo è value, che inserisce l'oggetto value nel body
+                // es: return Created($"/api/pizza/{createdPizza.Id}", createdPizza);
+                // prima avevo fatto un errore facendo -> return Created($"è stata aggiunta: {createdTupla.affec ecc ecc ...); perchè la "è" è un carattere speciale che non viene accettato nell' header 
+                // perchè l' header non può contenere caratteri non-ASCII
+                // codice rimosso per problema con il carattere "è" -> return Created($"è stata aggiunta: {createdTupla.affectedRows} Pizza al DB", createdTupla.createdPizza);
+                return Created($"/Pizza/{createdTupla.createdPizza.Id}", createdTupla.createdPizza);
+
+                // se volessi farlo come pensato in orgine potrei fare:
+                //return Created($"/Pizza/{createdTupla.createdPizza.Id}", new
+                //{
+                //    message = $"è stata aggiunta: {createdTupla.affectedRows} Pizza al DB",
+                //    pizza = createdTupla.createdPizza
+                //});
+                // perchè in questo caso la è sarebbe nel body e non nell' header 
             }
             catch (Exception e)
             {
@@ -129,7 +145,7 @@ namespace pizzeria_web_api.Controllers
                     _logger.WriteResultLogWithHttpInfo(HttpContext, $"Pizza con l' Id: {id} non trovata", (HttpStatusCode)404);
                     return NotFound();
                 }
-                _logger.WriteResultLogWithHttpInfo(HttpContext, $"è stata modificata la Pizza con Id: {id}", (HttpStatusCode)201);
+                _logger.WriteResultLogWithHttpInfo(HttpContext, $"modificata la Pizza con Id: {id}", (HttpStatusCode)201);
                 return Ok(affectedRows);
             }
             catch (Exception e)
@@ -153,7 +169,7 @@ namespace pizzeria_web_api.Controllers
                     _logger.WriteResultLogWithHttpInfo(HttpContext, $"Pizza con l' Id: {id} non trovata", (HttpStatusCode)404);
                     return NotFound();
                 }
-                _logger.WriteResultLogWithHttpInfo(HttpContext, $"è stata eliminata {affectedRows} Pizza");
+                _logger.WriteResultLogWithHttpInfo(HttpContext, $"eliminata {affectedRows} Pizza");
                 return Ok(affectedRows);
             }
             catch (Exception e)

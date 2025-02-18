@@ -22,7 +22,12 @@ namespace pizzeria_web_api.Models
         public List<Ingrediente> Ingrediente { get; set; } = new List<Ingrediente>();
 
 
-        public Pizza() { }
+
+        public Pizza()
+        {
+            IngredienteId = new List<int>();
+            Ingrediente = new List<Ingrediente>();
+        }
 
         public Pizza(int id, string nome, string descrizione, decimal prezzo)
         {

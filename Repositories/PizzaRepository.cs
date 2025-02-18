@@ -133,7 +133,7 @@ namespace pizzeria_web_api.Repositories
 
         public async Task<(int, Pizza)> CreatePizza(Pizza p)
         {
-            string query = $"INSERT INTO Pizza (nome, descrizione, prezzo, categoriaId) VALUES (@nome, @descrizione, @prezzo, @categoriaId)" +
+            string query = $"INSERT INTO Pizza (nome, descrizione, prezzo, categoriaId) VALUES (@nome, @descrizione, @prezzo, @categoriaId);" +
                         $"SELECT SCOPE_IDENTITY();"; // SCOPE_IDENTITY: ci serve per ottenere l'ID appena inserito
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -148,16 +148,18 @@ namespace pizzeria_web_api.Repositories
 
                     int pizzaId = Convert.ToInt32(await command.ExecuteScalarAsync());
 
+                    p.Id = pizzaId;
+
                     await GestisciIngredienti(p.IngredienteId,pizzaId,conn);
 
-                    return (await command.ExecuteNonQueryAsync(), p); // ritorna una tupla, contenente il numero di righe "modificate" e l' oggetto creato
+                    return (1, p); // ritorna una tupla, contenente il numero di righe "modificate" e l' oggetto creato
                 }
             }
         }
 
         public async Task<int> UpdatePizza(int id, Pizza p)
         {
-            string query = "UPDATE Pizza SET nome = @nome, descrizione = @descrizione, prezzo = @prezzo, categpriaId = @categoriaId WHERE Id = @Id";
+            string query = "UPDATE Pizza SET nome = @nome, descrizione = @descrizione, prezzo = @prezzo, categoriaId = @categoriaId WHERE Id = @Id";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
@@ -226,7 +228,7 @@ namespace pizzeria_web_api.Repositories
             int inserted = 0;
             foreach (int IngredienteId in Ingredienti)
             {
-                string query = $"INSERT INTO PizzaIngrediente (pizzaId, ingredientId) VALUES (@pizzaId, @ingredienteId)";
+                string query = $"INSERT INTO PizzaIngrediente (pizzaId, ingredienteId) VALUES (@pizzaId, @ingredienteId)";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@PizzaId", PizzaId);
