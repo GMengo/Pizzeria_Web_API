@@ -202,7 +202,7 @@ namespace pizzeria_web_api.Repositories
 
             string query = "UPDATE Pizza SET categoriaId = NULL WHERE categoriaId = @id";
             using SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("categoriaId", categoriaId);
+            command.Parameters.AddWithValue("@id", categoriaId);
             return await command.ExecuteNonQueryAsync();
         
         }
