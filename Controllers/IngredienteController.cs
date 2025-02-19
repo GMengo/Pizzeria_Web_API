@@ -61,8 +61,8 @@ namespace pizzeria_web_api.Controllers
                     return BadRequest(ModelState.Values);
                 }
                 ingrediente.Id = 0;
-                int affectedRows = await _ingredienteRepository.InsertIngredient(ingrediente);
-                return Ok(affectedRows);
+                await _ingredienteRepository.InsertIngredient(ingrediente);
+                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{ingrediente.Id}", ingrediente);
             }
             catch (Exception ex)
             {

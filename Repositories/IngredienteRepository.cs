@@ -55,30 +55,32 @@ namespace pizzeria_web_api.Repositories
             return null;
         }
 
-        public async Task<int> InsertIngredient(Ingrediente ingrediente)
+        public async Task<Ingrediente> InsertIngredient(Ingrediente ingrediente)
         {
             using SqlConnection conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
 
-            string query = $"INSERT INTO ingrediente (nome) VALUES (@nome);";
+            string query = $"INSERT INTO ingrediente (nome) VALUES (@nome);" +
+                        $"SELECT SCOPE_IDENTITY();";
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 cmd.Parameters.Add(new SqlParameter("@nome", ingrediente.Nome));
 
-                return await cmd.ExecuteNonQueryAsync();
+                ingrediente.Id = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                return ingrediente;
             }
         }
 
         public async Task<int> UpdateIngredienteAsync(int id, Ingrediente ingrediente)
         {
-            string query = "UPDATE Ingredients SET nome = @nome WHERE Id = @id";
+            string query = "UPDATE Ingrediente SET nome = @nome WHERE Id = @id";
             using SqlConnection conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
 
             using SqlCommand cmd = new SqlCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("nome", ingrediente.Nome);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@nome", ingrediente.Nome);
 
             return await cmd.ExecuteNonQueryAsync();
         }
@@ -91,7 +93,7 @@ namespace pizzeria_web_api.Repositories
 
             using SqlCommand cmd = new SqlCommand(query,conn);
 
-            cmd.Parameters.AddWithValue("id", id);
+            cmd.Parameters.AddWithValue("@id", id);
 
             return await cmd.ExecuteNonQueryAsync();
         }
@@ -104,7 +106,7 @@ namespace pizzeria_web_api.Repositories
 
             using SqlCommand cmd = new SqlCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("ingredienteId", ingredienteId);
+            cmd.Parameters.AddWithValue("@ingredienteId", ingredienteId);
 
             return await cmd.ExecuteNonQueryAsync();
         }
