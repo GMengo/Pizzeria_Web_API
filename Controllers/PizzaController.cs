@@ -110,7 +110,10 @@ namespace pizzeria_web_api.Controllers
                 // prima avevo fatto un errore facendo -> return Created($"è stata aggiunta: {createdTupla.affec ecc ecc ...); perchè la "è" è un carattere speciale che non viene accettato nell' header 
                 // perchè l' header non può contenere caratteri non-ASCII
                 // codice rimosso per problema con il carattere "è" -> return Created($"è stata aggiunta: {createdTupla.affectedRows} Pizza al DB", createdTupla.createdPizza);
-                return Created($"/Pizza/{createdTupla.createdPizza.Id}", createdTupla.createdPizza);
+                //return Created($"/Pizza/{createdTupla.createdPizza.Id}", createdTupla.createdPizza); metodo dove scrivo il path manualmente (se dovessi cambiarlo qua rimarrebbe così, non va bene)
+                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.createdPizza.Id}", createdTupla.createdPizza); // lettura del controller tramite la proprietà ControllerContext.ActionDescriptor.ControllerName
+
+
 
                 // se volessi farlo come pensato in orgine potrei fare:
                 //return Created($"/Pizza/{createdTupla.createdPizza.Id}", new
