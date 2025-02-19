@@ -40,6 +40,7 @@ namespace pizzeria_web_api.Repositories
                 var ingredienteId = r.GetInt32(r.GetOrdinal("Id_Ingrediente"));
                 var ingredienteNome = r.GetString(r.GetOrdinal("nome_Ingrediente"));
                 Ingrediente i = new Ingrediente(ingredienteId, ingredienteNome);
+                pizza.IngredienteId.Add(ingredienteId);
                 pizza.Ingrediente.Add(i);
             }
         }
@@ -231,8 +232,8 @@ namespace pizzeria_web_api.Repositories
                 string query = $"INSERT INTO PizzaIngrediente (pizzaId, ingredienteId) VALUES (@pizzaId, @ingredienteId)";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@PizzaId", PizzaId);
-                    cmd.Parameters.AddWithValue("@IngredienteId", IngredienteId);
+                    cmd.Parameters.AddWithValue("@pizzaId", PizzaId);
+                    cmd.Parameters.AddWithValue("@ingredienteId", IngredienteId);
                     inserted += await cmd.ExecuteNonQueryAsync();
                 }
             }
