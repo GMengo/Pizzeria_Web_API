@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using pizzeria_web_api.Repositories;
+using pizzeria_web_api.Services;
 
 namespace CalculatorWebApi.Middlewares
 {

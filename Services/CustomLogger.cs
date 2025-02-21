@@ -2,10 +2,10 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace pizzeria_web_api.Repositories
+namespace pizzeria_web_api.Services
 {
 
-    public interface ICustomLogger 
+    public interface ICustomLogger
     {
 
         public void WriteLog(string message);
