@@ -50,3 +50,10 @@
     ('Frutti di Mare', 'pomodoro, frutti di mare misti e prezzemolo', 12.5),
     ('Ortolana', 'mozzarella, zucchine, melanzane e peperoni grigliati', 9.5);
 
+    
+    CREATE TABLE Utente
+    (
+        Id int primary key identity (1,1) not null,
+        Email nvarchar(50) not null unique,
+        PasswordHash nvarchar(255) not null
+    );
