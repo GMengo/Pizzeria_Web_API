@@ -32,11 +32,7 @@
         FOREIGN KEY (IngredienteId) REFERENCES Ingrediente(Id)
     )
 
-
-
     insert into Categoria(nome) values('bianca'),('rossa'),('margherita');
-
-
 
     INSERT INTO Pizza(nome, descrizione, prezzo) VALUES
     ('Diavola', 'base margherita con salame piccante', 9.5),
@@ -50,10 +46,30 @@
     ('Frutti di Mare', 'pomodoro, frutti di mare misti e prezzemolo', 12.5),
     ('Ortolana', 'mozzarella, zucchine, melanzane e peperoni grigliati', 9.5);
 
-    
     CREATE TABLE Utente
     (
         Id int primary key identity (1,1) not null,
         Email nvarchar(50) not null unique,
         PasswordHash nvarchar(255) not null
     );
+
+
+    CREATE TABLE Ruolo
+    (
+        Id INT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
+        Nome NVARCHAR(50) NOT NULL UNIQUE
+    );
+
+    CREATE TABLE UtenteRuolo
+    (
+        UtenteId INT NOT NULL,
+        RuoloId INT NOT NULL,
+        PRIMARY KEY (UtenteId, RuoloId),
+        FOREIGN KEY (UtenteId) REFERENCES Utente(Id),
+        FOREIGN KEY (RuoloId) REFERENCES Ruolo(Id)
+    );
+
+    insert into utente(email,passwordhash) values ('giovannimengoni@gmail.com','AQAAAAIAAYagAAAAEPQ55KA2GkigxaNQu05vhn6IYaIqHbn2SKC9nu5FXHuASo0rZ+f8oRTUj9b6ItIg4A=='); -- per testare il login la password è l' hash di "giovanni"
+    -- questo è un modo manuale di dare un ruolo superiore a un utente come l' admin, senza fare una chiamata api ma un interazione diretta da DB
+    insert into ruolo (nome) values ('admin');
+    insert into utenteruolo(utenteid,ruoloid) values (1,1);

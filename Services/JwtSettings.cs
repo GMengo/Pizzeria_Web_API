@@ -30,14 +30,22 @@ namespace pizzeria_web_api.Services
             Utente utente = await _utenteService.AuthenticateAsync(email, password);
             if (utente == null) { return null; }
 
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, email)
+            };
+            
+            List<string> ruoli = await _utenteService.GetUserRolesAsync(utente.Id);
+            foreach (string ruolo in ruoli)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, ruolo));
+            }
+
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             byte[] tokenKey = Encoding.ASCII.GetBytes(_jwtSettings.Key);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, email)
-                }),
+                Subject = new System.Security.Claims.ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
             };

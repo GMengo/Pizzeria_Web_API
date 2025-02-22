@@ -95,7 +95,7 @@ namespace pizzeria_web_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

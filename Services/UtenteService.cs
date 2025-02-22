@@ -50,5 +50,28 @@ namespace pizzeria_web_api.Services
             }
             return null;
         }
+
+        //  andare a vedere -> .\SQLQuery_creazione_e_popolamento_DB.sql per spiegazione gestione ruoli
+        public async Task<List<string>> GetUserRolesAsync(int utenteId)
+        {
+            List<string> ruoli = new List<string>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                SqlCommand command = new SqlCommand(
+                "SELECT r.Nome " +
+                "FROM Ruolo r " +
+                "INNER JOIN UtenteRuolo ur ON r.Id = ur.RuoloId " +
+                "WHERE ur.UtenteId = @UtenteId", connection);
+                command.Parameters.AddWithValue("@UtenteId", utenteId);
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    ruoli.Add(reader.GetString(0));
+                }
+            }
+            return ruoli;
+        }
+
     }
 }
