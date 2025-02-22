@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using pizzeria_web_api.Models;
 using pizzeria_web_api.Services;
 
@@ -34,8 +35,18 @@ namespace pizzeria_web_api.Controllers
             string token = await _jwtAuthenticationService.Authenticate(utente.Email, utente.Password);
             if (token == null)
             {
-                return Unauthorized();
+                return Unauthorized("Credenziali non valide");
             }
+
+            // aggiunta del cookie per rendere automatico il riconoscimento di chi è loggato, senza doverlo testare manualmente inserendo il token, assegnando questo compito al broswer 
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddMinutes(_jwtAuthenticationService._jwtSettings.DurationInMinutes)
+            });
+
 
             return Ok(new
             {
@@ -44,7 +55,18 @@ namespace pizzeria_web_api.Controllers
             });
         }
 
+        [HttpPost("[Action]")]
+        [Authorize] 
+        public IActionResult Logout()
+        {
+            // Cancella il cookie "jwt" inviando un'istruzione al client
+            Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                Secure = false, 
+                SameSite = SameSiteMode.Lax
+            });
 
-
+            return Ok(new { Message = "Logout effettuato con successo!" });
+        }
     }
 }

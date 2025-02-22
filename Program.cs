@@ -34,6 +34,15 @@ namespace pizzeria_web_api
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                // questo evento permette di leggere il token dal cookie 
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["jwt"];
+                        return Task.CompletedTask;
+                    }
+                };
             });
             builder.Services.AddControllers();
             builder.Services.AddSingleton<ICustomLogger, CustomConsoleLogger>();
