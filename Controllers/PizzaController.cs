@@ -7,6 +7,7 @@ using pizzeria_web_api.Models;
 using pizzeria_web_api.Repositories;
 using System.Net;
 using pizzeria_web_api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace pizzeria_web_api.Controllers
 {
@@ -161,6 +162,7 @@ namespace pizzeria_web_api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
 
         public async Task<IActionResult> DeletePizza(int id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using pizzeria_web_api.Models;
 using pizzeria_web_api.Repositories;
 
@@ -94,6 +95,7 @@ namespace pizzeria_web_api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
 
         public async Task<IActionResult> Delete(int id)
         {
