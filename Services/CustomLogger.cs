@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace pizzeria_web_api.Services
@@ -26,27 +27,31 @@ namespace pizzeria_web_api.Services
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Request arrivata: [method: {method}, path: {path}] - {message}");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Request arrivata: [utente: {utente}, method: {method}, path: {path}] - {message}");
         }
         public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Response in uscita: [method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Response in uscita: [utente: {utente}, method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}");
         }
 
         public void WriteRequest(HttpContext httpContext)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Request arrivata: [method: {method}, path: {path}]");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Request arrivata: [utente: {utente}, method: {method}, path: {path}]");
         }
         public void WriteResponse(HttpContext httpContext)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
             int statusCode = httpContext.Response.StatusCode;
-            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Response in uscita: [status code: {statusCode} {(HttpStatusCode)statusCode}, method: {method}, path: {path}]");
+            Console.WriteLine($"LOG {DateTime.Now.ToString("G")} Response in uscita: [status code: {statusCode} {(HttpStatusCode)statusCode}, utente: {utente}, method: {method}, path: {path}]");
         }
 
     }
@@ -62,26 +67,30 @@ namespace pizzeria_web_api.Services
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Request arrivata: [method: {method}, path: {path}] - {message}\n");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Request arrivata: [utente: {utente}, method: {method}, path: {path}] - {message}\n");
         }
         public void WriteResultLogWithHttpInfo(HttpContext httpContext, string? message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Response in uscita: [method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}\n");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Response in uscita: [utente: {utente}, method: {method}, status code: {(int)statusCode} {statusCode}, path: {path}] - {message}\n");
         }
         public void WriteRequest(HttpContext httpContext)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Request arrivata: [method: {method}, path: {path}]");
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Request arrivata: [utente: {utente}, method: {method}, path: {path}]");
         }
         public void WriteResponse(HttpContext httpContext)
         {
             string method = httpContext.Request.Method;
             string path = httpContext.Request.Path;
+            string utente = httpContext.User?.FindFirst(ClaimTypes.Email)?.Value ?? "Sconosciuto";
             int statusCode = httpContext.Response.StatusCode;
-            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Response in uscita: [status code: {statusCode} {(HttpStatusCode)statusCode}, method: {method}, path: {path}]");
+            File.AppendAllText("./log.txt", $"LOG {DateTime.Now.ToString("G")} Response in uscita: [status code: {statusCode} {(HttpStatusCode)statusCode}, utente: {utente}, method: {method}, path: {path}]");
         }
 
     }
