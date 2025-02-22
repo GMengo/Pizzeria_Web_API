@@ -1,4 +1,10 @@
-﻿namespace pizzeria_web_api.Services
+﻿using Microsoft.IdentityModel.Tokens;
+using pizzeria_web_api.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace pizzeria_web_api.Services
 {
     public class JwtSettings
     {
@@ -19,6 +25,26 @@
             _utenteService = utenteService;
         }
 
+        public async Task<string> Authenticate(string email, string password)
+        {
+            Utente utente = await _utenteService.AuthenticateAsync(email, password);
+            if (utente == null) { return null; }
 
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            byte[] tokenKey = Encoding.ASCII.GetBytes(_jwtSettings.Key);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, email)
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
+            };
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+
+        }
     }
 }
+
