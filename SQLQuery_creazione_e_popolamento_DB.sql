@@ -69,7 +69,7 @@
         FOREIGN KEY (RuoloId) REFERENCES Ruolo(Id)
     );
 
-    insert into utente(email,passwordhash) values ('giovannimengoni@gmail.com','AQAAAAIAAYagAAAAEPQ55KA2GkigxaNQu05vhn6IYaIqHbn2SKC9nu5FXHuASo0rZ+f8oRTUj9b6ItIg4A=='); -- per testare il login la password è l' hash di "giovanni"
+    insert into utente(email,passwordhash) values ('admin@prova.com','AQAAAAIAAYagAAAAEEOoenBKf+Hd6FfY57xO9/Ik08TsH5Vi7H7+cbhDkyqyyoiWpx6sLnFC8WLiJ3ys6g=='); -- per testare il login la password è l' hash di "prova"
     -- questo è un modo manuale di dare un ruolo superiore a un utente come l' admin, senza fare una chiamata api ma un interazione diretta da DB
     insert into ruolo (nome) values ('admin');
-    insert into utenteruolo(utenteid,ruoloid) values (1,1);
+    insert into utenteruolo(utenteid,ruoloid) values (1,1); -- diamo il ruolo di admin al primo utente inserito nel DB in questo caso all' utente con l' email: admin@prova.com 
