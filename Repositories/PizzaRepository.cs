@@ -191,6 +191,7 @@ namespace pizzeria_web_api.Repositories
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
+                    await ClearPizzaIngrediente(id);
                     return await command.ExecuteNonQueryAsync();
                 }
             }
