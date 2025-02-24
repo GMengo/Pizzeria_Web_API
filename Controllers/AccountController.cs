@@ -21,12 +21,20 @@ namespace pizzeria_web_api.Controllers
         [HttpPost("[Action]")]
         public async Task<IActionResult> Register([FromBody] UtenteModel utente)
         {
-            Boolean result = await _utenteService.RegisterAsync(utente);
-            if (!result) 
+            try
             {
-                return BadRequest(new { Message = "Registrazione fallita!" }); 
+                Boolean result = await _utenteService.RegisterAsync(utente);
+                if (!result)
+                {
+                    return BadRequest(new { Message = "Registrazione fallita! La password deve contenere almeno 8 caratteri, un numero e una lettera maiuscola" });
+                }
+                return Ok(new { Message = "Registrazione avvenuta con successo!" });
             }
-            return Ok(new {Message = "Registrazione avvenuta con successo!"});
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpPost("[Action]")]

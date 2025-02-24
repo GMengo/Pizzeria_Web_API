@@ -17,16 +17,52 @@ namespace pizzeria_web_api.Services
 
         public async Task<bool> RegisterAsync(UtenteModel utente)
         {
-            string passwordHash = _passwordHasher.HashPassword(utente, utente.Password);
-
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
+            string ricercaUtente = "SELECT * FROM Utente where Email = @Email";
+            using (SqlCommand commandRicerca = new SqlCommand(ricercaUtente, connection))
+            {
+                commandRicerca.Parameters.AddWithValue("@Email", utente.Email);
+                SqlDataReader reader = await commandRicerca.ExecuteReaderAsync();
+                if (reader.Read())
+                    throw (new Exception(message: "Esiste già un utente registrato con l' email inserita"));
+                await reader.CloseAsync();
+            }
+            bool validatoreNumero = false;
+            bool validatoreMaiuscola = false;
+
+            if (utente.Password.Length < 8)
+                return false;
+
+            foreach (char carattere in utente.Password)
+            {
+                try
+                {
+                    // va fatto perchè la conversione di una stringa in char è sempre vera perchè restituisce il suo corrispetivo numerico
+                    string daCharaString = Convert.ToString(carattere);
+                    int tester = Convert.ToInt32(daCharaString);
+                    validatoreNumero = true;
+                }
+                catch (Exception ex) { }
+
+                if (char.IsLetter(carattere) && carattere.ToString() == carattere.ToString().ToUpper())
+                {
+                    validatoreMaiuscola = true;
+                }
+            }
+            if (validatoreMaiuscola == false || validatoreNumero == false)
+            {
+                return false;
+            }
+
+            string passwordHash = _passwordHasher.HashPassword(utente, utente.Password);
 
             string query = "INSERT INTO Utente (Email, PasswordHash) VALUES (@Email, @PasswordHash)";
             using SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@Email", utente.Email);
             command.Parameters.AddWithValue("@PasswordHash", passwordHash);
             return await command.ExecuteNonQueryAsync() > 0;
+
         }
 
         public async Task<Utente> AuthenticateAsync(string email, string password)
