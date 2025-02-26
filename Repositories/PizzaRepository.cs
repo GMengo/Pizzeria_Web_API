@@ -15,6 +15,14 @@ namespace pizzeria_web_api.Repositories
         {
             int id = r.GetInt32(r.GetOrdinal("Id"));
 
+            // Se la pizza con questo ID è già nel dizionario, ottiene il riferimento all'oggetto esistente
+            // e rende lo scope di pizza tutta la funzione dov' è contenuto l' if, questo ci permette di usarlo anche negli if successivi
+            // feautre introdotta in C# 7, per renderla più chiara potremmo fare come scritto qua sotto
+            // Pizza pizza = null; 
+            // noi con questo if avremo sempre una pizza con scope di tutta la funzione, se l' esito è true sarà quella presa dal dizionario (come se fosse tramite puntatore)
+            // mentre se dovesse essere false restituirebbe una nuova istanza Picca con nome = pizza e il valore = null (che aggiungerebbe al dizionario);
+            // le successive modifiche a pizza influenzano l'oggetto referenziato nel dizionario.
+
             if (pizze.TryGetValue(id, out Pizza pizza) == false)
             {
                 string nome = r.GetString(r.GetOrdinal("nome"));
@@ -26,8 +34,10 @@ namespace pizzeria_web_api.Repositories
             }
             if (r.IsDBNull(r.GetOrdinal("Id_Categoria")) == false)
             {
-                int categoriaId = r.GetInt32(r.GetOrdinal("Id_Categoria"));
-                string nomeCategoria = r.GetString(r.GetOrdinal("nome_Categoria"));
+                // Se non esiste, crea una nuova istanza e la aggiunge al dizionario
+                //int categoriaId = r.GetInt32(r.GetOrdinal("Id_Categoria"));
+                //string nomeCategoria = r.GetString(r.GetOrdinal("nome_Categoria"));
+                // testo sopra per renderlo più chiaro, non è necessario avrei dovuto poi fare c.Id = categoriaId; c.Nome = nomeCategoria;
                 Categoria c = new();
                 c.Id = r.GetInt32(r.GetOrdinal("Id_Categoria"));
                 c.Nome = r.GetString(r.GetOrdinal("nome_Categoria"));
@@ -37,6 +47,7 @@ namespace pizzeria_web_api.Repositories
 
             if (r.IsDBNull(r.GetOrdinal("Id_Ingrediente")) == false)
             {
+                // Se la pizza ha ingredienti, aggiunge l'ingrediente alla lista
                 var ingredienteId = r.GetInt32(r.GetOrdinal("Id_Ingrediente"));
                 var ingredienteNome = r.GetString(r.GetOrdinal("nome_Ingrediente"));
                 Ingrediente i = new Ingrediente(ingredienteId, ingredienteNome);
