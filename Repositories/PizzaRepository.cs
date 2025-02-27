@@ -19,8 +19,9 @@ namespace pizzeria_web_api.Repositories
             // e rende lo scope di pizza tutta la funzione dov' è contenuto l' if, questo ci permette di usarlo anche negli if successivi
             // feautre introdotta in C# 7, per renderla più chiara potremmo fare come scritto qua sotto
             // Pizza pizza = null; 
+            // questo vuol dire che pizza non è un oggetto Pizza, ma ha proprio il valore di null, pertanto dovremo istanziare la variabile pizza alla classe Pizza -> pizza = new Pizza(); (da notare che la classe non andrà messa prima del nome della variabile come in fase di inizializzazione perchè pizza già esiste ed è null)
             // noi con questo if avremo sempre una pizza con scope di tutta la funzione, se l' esito è true sarà quella presa dal dizionario (come se fosse tramite puntatore)
-            // mentre se dovesse essere false restituirebbe una nuova istanza Picca con nome = pizza e il valore = null (che aggiungerebbe al dizionario);
+            // mentre se dovesse essere false restituirebbe una nuova istanza Pizza con nome = pizza e il valore = null (che aggiungerebbe al dizionario);
             // le successive modifiche a pizza influenzano l'oggetto referenziato nel dizionario.
 
             if (pizze.TryGetValue(id, out Pizza pizza) == false)

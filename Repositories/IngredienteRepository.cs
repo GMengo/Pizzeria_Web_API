@@ -68,6 +68,7 @@ namespace pizzeria_web_api.Repositories
 
                 ingrediente.Id = Convert.ToInt32(await cmd.ExecuteScalarAsync());
                 return ingrediente;
+                // sarebbe meglio mettere il ritorno a Task<int> e fare direttamente return ingrediente.Id (per migliorare le performance) poi modificare il controller e ritornare nel body ($"è stato inserito un ingrediente con l' id: {ingrediente.it}")
             }
         }
 
