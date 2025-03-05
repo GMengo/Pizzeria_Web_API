@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using pizzeria_web_api.Models;
+using System.Data;
 
 namespace pizzeria_web_api.Services
 {
@@ -107,6 +108,26 @@ namespace pizzeria_web_api.Services
                 }
             }
             return ruoli;
+        }
+
+        public async Task<Utente> GetUserById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "select * from utente where id = @id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+                var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    Utente u = new Utente();
+                    u.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    u.Email = reader.GetString(reader.GetOrdinal("email"));
+                    return u;
+                }
+            }
+            return null;
         }
 
     }
