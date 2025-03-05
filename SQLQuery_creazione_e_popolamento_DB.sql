@@ -15,7 +15,8 @@
     add categoriaId int null
 
     alter table pizza
-    add constraint fk_Pizza_Categoria foreign key(categoriaId) references Categoria(Id);
+    add constraint fk_Pizza_Categoria foreign key(categoriaId) references Categoria(Id); -- il constraint serve per dare un nome al vincolo, se non l' avessi messo sarebbe risultato unnamed (quindi è opzionale) vedi tabella sotto PizzaIngrediente dove non c'è un add constraint;
+    -- ON DELETE SET NULL;  -- Se si elimina una categoria, le pizze rimangono ma senza categoria (sarebbe un alternativa al codice scritto con gestione direttamente da DB e non da codice)
 
         CREATE TABLE Ingrediente
     (
@@ -29,7 +30,9 @@
         ingredienteId INT,
         PRIMARY KEY (PizzaId, IngredienteId),
         FOREIGN KEY (PizzaId) REFERENCES Pizza(Id),
+        -- ON DELETE CASCADE,  -- Se si elimina una pizza, le sue associazioni vengono rimosse (sarebbe un alternativa al codice scritto con gestione direttamente da DB e non da codice)
         FOREIGN KEY (IngredienteId) REFERENCES Ingrediente(Id)
+        -- ON DELETE CASCADE  -- Se si elimina un ingrediente, l'associazione viene rimossa (sarebbe un alternativa al codice scritto con gestione direttamente da DB e non da codice)
     )
 
     insert into Categoria(nome) values('bianca'),('rossa'),('margherita');

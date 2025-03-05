@@ -62,7 +62,7 @@ namespace pizzeria_web_api.Controllers
                 {
                     return BadRequest(ModelState.Values);
                 }
-                categoria.Id = 0; //mi assicuro che la categoria venga inserita, mi serve per la serializzazione in json 
+                categoria.Id = 0; //mi assicuro che la categoria venga inserita, mi serve per l' inserimento nel DB (è un controllo in più, quasi superfluo, perchè quando creiamo una categoria all' id viene dato il valore di default di un int, che è 0, se avessi messo nel model di categoria int? id, allora sarebbe stato null e avrebbe causato un errore)
                 int affectedRows = await _categoriaRepository.InsertCategoria(categoria);
                 return Ok(affectedRows);
             }

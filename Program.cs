@@ -70,11 +70,12 @@ namespace pizzeria_web_api
 
 
             app.UseAuthentication();
+            app.UseMiddleware<LogMiddleware>();
             app.UseAuthorization();
 
             // mettendo il middleware del logger dopo l' autenticazione e l' autorizzazione Le risposte di "401 Unauthorized" e "403 Forbidden" generate da UseAuthentication()/UseAuthorization() non raggiungeranno il logging middleware, quindi non verranno registrate. 
             // se invece lo mettessi prima non avrei nella request le credenziali dell' utente che sta effettuando la chiamata API
-            app.UseMiddleware<LogMiddleware>();
+            // soluzione migliore per il momento è metterlo tra Authentication e Autorization, in modo tale che autentica sempre l' utente prima dell' utilizzo del logger in modo tale da poter vedere quando vengono autorizzati e quando no
 
             app.UseHttpsRedirection();
             app.MapControllers();

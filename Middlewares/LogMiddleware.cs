@@ -16,11 +16,15 @@ namespace CalculatorWebApi.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            DateTime startTime = DateTime.Now; 
             _logger.WriteRequest(context);
 
             await _next(context);
+            DateTime endTime = DateTime.Now;
+            int duration = (int)(endTime - startTime).TotalMilliseconds;
+            // aggiunta durata della chiamata, tempo della risposta - tempo della richiesta
 
-            _logger.WriteResponse(context);
+            _logger.WriteResponse(context, duration);
         }
     }
 }

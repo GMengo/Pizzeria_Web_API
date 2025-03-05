@@ -89,6 +89,36 @@ namespace pizzeria_web_api.Controllers
             }
         }
 
+        [HttpGet("Top")]
+        public async Task<IActionResult> GetLimit(int? limit)
+        {
+            _logger.WriteStartingLogWithHttpInfo(HttpContext);
+
+            try
+            {
+                if (limit == null)
+                {
+                    List<Pizza> result = (await PizzaRepository.GetAllPizza());
+                    _logger.WriteResultLogWithHttpInfo(HttpContext, $"Restituiti {result.Count} risultati");
+                    return Ok(result);
+
+
+                }
+                else
+                {
+                    List<Pizza> result = (await PizzaRepository.GetAllPizza(limit));
+                    _logger.WriteResultLogWithHttpInfo(HttpContext, $"Restituiti {result.Count} risultati");
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteResultLogWithHttpInfo(HttpContext, $"Errore: {ex.Message}", (HttpStatusCode)400);
+                return BadRequest(ex.Message);
+            }
+
+        }
+
 
         [HttpPost]
         //creare una pizza passando un json nel body della richiesta

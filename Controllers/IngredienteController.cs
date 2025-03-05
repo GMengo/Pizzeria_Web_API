@@ -64,6 +64,7 @@ namespace pizzeria_web_api.Controllers
                 ingrediente.Id = 0;
                 await _ingredienteRepository.InsertIngredient(ingrediente);
                 return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{ingrediente.Id}", ingrediente);
+                // vedere commento nella repository per alternativa più efficiente 
             }
             catch (Exception ex)
             {
