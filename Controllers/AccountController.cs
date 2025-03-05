@@ -64,13 +64,46 @@ namespace pizzeria_web_api.Controllers
             });
         }
 
-        [HttpGet("GetUserRoles/{userId}")]
+        [HttpGet("GetUserRolesById/{userId}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUserRolesById(int userId)
         {
             try
             {
+                Utente u = await _utenteService.GetUserById(userId);
+                if (u == null)
+                {
+                    return NotFound();
+                }
                 var ruoli = await _utenteService.GetUserRolesAsync(userId);
+                if (!ruoli.Any())
+                {
+                    return Ok("utente comune");
+                }
+                return Ok(ruoli);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetUserRolesByEmail/{email}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetUserRolesByEmail(string email)
+        {
+            try
+            {
+                Utente u = await _utenteService.GetUserByEmail(email);
+                if (u == null)
+                {
+                    return NotFound();
+                }
+                var ruoli = await _utenteService.GetUserRolesAsync(u.Id);
+                if (!ruoli.Any())
+                {
+                    return Ok("utente comune");
+                }
                 return Ok(ruoli);
             }
             catch (Exception ex)
@@ -87,13 +120,14 @@ namespace pizzeria_web_api.Controllers
             try
             {
                 // Estrazione ID utente dal JWT
-                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                var ruoli = await _utenteService.GetUserRolesAsync(u.Id);
+                if (ruoli == null)
                 {
                     return Unauthorized("Utente comune");
                 }
-
-                var ruoli = await _utenteService.GetUserRolesAsync(userId);
                 return Ok(ruoli);
             }
             catch (Exception ex)
